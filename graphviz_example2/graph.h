@@ -1,7 +1,8 @@
-// UNDIRECTED WEIGHTED GRAPH
+﻿// UNDIRECTED WEIGHTED GRAPH
 
 #ifndef GRAPH_H
 #define GRAPH_H
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -14,144 +15,148 @@ class Graph
 {
 public:
 
-    class Node
-    {
-    public:
-        T data;
-        Node(const T& data = T()) : data(data) {}
-    };
+	class Node
+	{
+	public:
+		T data;
+		Node(const T& data = T()) : data(data) {}
+	};
 
-    ~Graph()
-    {
-        for (Node* node : _nodes)
-            delete node;
-    }
+	~Graph()
+	{
+		for (Node* node : _nodes)
+			delete node;
+	}
 
-    Node* addNode(const T& data = T())
-    {
-        Node* node = new Node(data);
+	Node* addNode(const T& data = T())
+	{
+		Node* node = new Node(data);
 
-        _nodes.push_back(node);
+		_nodes.push_back(node);
 
-        return node;
-    }
+		return node;
+	}
 
-    bool existsNode(T& x)
-    {
-        // Check if exists a node with data = x
-        for(Node* node : _nodes)
-            if(node->data == x)
-                return true;
-        return false;
-    }
+	bool existsNode(T& x)
+	{
+		// Check if exists a node with data = x
+		for (Node* node : _nodes)
+			if (node->data == x)
+				return true;
+		return false;
+	}
 
-    void addEdge(Node* nodeSource, Node* nodeDest, int weight)
-    {
-        bool existsNodeSource = std::find(_nodes.begin(), _nodes.end(), nodeSource) != _nodes.end();
-        bool existsNodeDest = std::find(_nodes.begin(), _nodes.end(), nodeDest) != _nodes.end();
+	void addEdge(Node* nodeSource, Node* nodeDest, int weight)
+	{
+		bool existsNodeSource = std::find(_nodes.begin(), _nodes.end(), nodeSource) != _nodes.end();
+		bool existsNodeDest = std::find(_nodes.begin(), _nodes.end(), nodeDest) != _nodes.end();
 
-        if (existsNodeSource && existsNodeDest)
-        {
-            // Create two edges (A,B) and (A,B) which represent a bi-directional link A<--->B
-            _adjList.insert( { nodeSource , nodeDest });
-            _adjList.insert( { nodeDest , nodeDest  });
+		if (existsNodeSource && existsNodeDest)
+		{
+			// Create two edges (A,B) and (A,B) which represent a bi-directional link A<--->B
+			_adjList.insert({ nodeSource , nodeDest });
+			_adjList.insert({ nodeDest , nodeDest });
 
-            _edgeWeights.insert({ weight, {nodeSource, nodeDest} } );
-            _edgeWeights.insert({ weight, {nodeDest, nodeSource} } );
-        }
-    }
+			_edgeWeights.insert({ weight, {nodeSource, nodeDest} });
+			_edgeWeights.insert({ weight, {nodeDest, nodeSource} });
+		}
+	}
 
-    Node* getNode(const T& data)
-    {
-        for(Node* node : _nodes)
-            if(node->data == data)
-                return node;
-        return nullptr;
-    }
+	Node* getNode(const T& data)
+	{
+		for (Node* node : _nodes)
+			if (node->data == data)
+				return node;
+		return nullptr;
+	}
 
-    bool existsEdge(Node* x, Node* y)
-    {
-        auto ret = _adjList.equal_range(x);
+	bool existsEdge(Node* x, Node* y)
+	{
+		auto ret = _adjList.equal_range(x);
 
-        // all pairs whose first component is equal to x are in the range [ret->first, ret->second)
-        for(auto it = ret.first; it != ret.second; ++it)
-            if(it->second == y)
-                return true;
-        return false;
-    }
+		// all pairs whose first component is equal to x are in the range [ret->first, ret->second)
+		for (auto it = ret.first; it != ret.second; ++it)
+			if (it->second == y)
+				return true;
+		return false;
+	}
 
-    std::vector<Node*> getNeighbors(Node* x)
-    {
-        std::vector<Node*> neighbors;
+	std::vector<Node*> getNeighbors(Node* x)
+	{
+		std::vector<Node*> neighbors;
 
-        auto ret = _adjList.equal_range(x);
+		auto ret = _adjList.equal_range(x);
 
-        for(auto it = ret.first; it != ret.second; ++it)
-            neighbors.push_back(it->second);
+		for (auto it = ret.first; it != ret.second; ++it)
+			neighbors.push_back(it->second);
 
-        // for every node "y" in the vector "neighbors", there exists an edge "(x,y)" in the graph.
-        return neighbors;
-    }
+		// for every node "y" in the vector "neighbors", there exists an edge "(x,y)" in the graph.
+		return neighbors;
+	}
 
-    int getNodeOutDegree(Node* x)
-    {
-        return this->getNeighbors(x).size();
-    }
+	int getNodeOutDegree(Node* x)
+	{
+		return this->getNeighbors(x).size();
+	}
 
-    int getNodeInDegree(Node* x)
-    {
-        int cnt = 0;
+	int getNodeInDegree(Node* x)
+	{
+		int cnt = 0;
 
-        for(auto pair : _adjList)
-            if(pair.second == x)
-                cnt++;
-        return cnt;
-    }
+		for (auto pair : _adjList)
+			if (pair.second == x)
+				cnt++;
+		return cnt;
+	}
 
-    const std::vector<Node*>& getNodes() const
-    {
-        return _nodes;
-    }
+	const std::vector<Node*>& getNodes() const
+	{
+		return _nodes;
+	}
 
-    const std::multimap<int, std::pair<Node*,Node*>> getEdgeWeights() const
-    {
-        return _edgeWeights;
-    }
+	const std::map<int, std::pair<Node*, Node*>> getEdgeWeights() const
+	{
+		return _edgeWeights;
+	}
+
+	const std::map<Node*, Node*>& getEdges() const
+	{
+		return _adjList;
+	}
 
 private:
 
-    std::multimap<Node*, Node*> _adjList;
+	std::map<Node*, Node*> _adjList;
 
-    std::multimap<int, std::pair<Node*,Node*>> _edgeWeights;
+	std::vector<Node*> _nodes;
 
-    std::vector<Node*> _nodes;
-
+	std::map<int, std::pair<Node*, Node*>> _edgeWeights;
 };
 
 template<typename T>
 std::ostream& operator <<(std::ostream& os, const Graph<T>& graph)
 {
-    using Node = typename Graph<T>::Node;
+	using Node = typename Graph<T>::Node;
 
-    for(Node* node : graph.getNodes())
-        os << node->data << std::endl;
+	for (Node* node : graph.getNodes())
+		os << node->data << std::endl;
 
-    bool skip = true; // only for undirected graphs!
+	bool skip = true; // only for undirected graphs!
 
-    for(auto edge : graph.getEdgeWeights())
-    {
-        if(skip = !skip) //only for undirected graphs
-            continue;
+	for (auto edge : graph.getEdgeWeights())
+	{
+		if (skip = !skip) //only for undirected graphs
+			continue;
 
-        int weight = edge.first;
+		int weight = edge.first;
 
-        Node* u = edge.second.first;
-        Node* v = edge.second.second;
+		Node* u = edge.second.first;
+		Node* v = edge.second.second;
 
-        os << u->data << ' ' << v->data << ' ' <<  weight << std::endl; // printing the weight
-    }
+		os << u->data << ' ' << v->data << ' ' << weight << std::endl; // printing the weight
+	}
 
-    return os;
+	return os;
 }
 
 #endif
